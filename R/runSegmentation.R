@@ -741,7 +741,7 @@ runSegmentation=function(x,
     segments <- .flapply(cna, FUN=function(x, ...) {
         message(msgs[colnames(x)[3]])
         DNAcopy::segment(x, alpha=alpha, undo.splits=undo.splits,
-                         undo.SD=undo.SD, verbose=0, ...)
+                         undo.SD=undo.SD, verbose=3, ...)
     })
 
     segmentStatisticCol <- grep(segmentStatistic,
