@@ -69,7 +69,7 @@ runSegmentation=function(x,
     minimumBinsPerSegment=3,
     gapLength=1000000,
     normalizeSegmentedBins=TRUE, inter=c(-0.1, 0.1),
-    alpha=1e-10, undo.splits="sdundo", undo.SD=1.0,
+    alpha=0.01, undo.splits="sdundo", undo.SD=1.0,
     segmentStatistic="seg.mean"){
 
 
