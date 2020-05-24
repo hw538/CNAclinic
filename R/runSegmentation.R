@@ -720,15 +720,19 @@ runSegmentation=function(x,
     start <- x$start
 
     # Create a list of CNA objects that can be analyzed with *lapply()
-    cna <- lapply(sampleNames, function(x)
-        DNAcopy::CNA(
+    cna <- lapply(sampleNames, function(x){
+        cna_no_smooth <- DNAcopy::CNA(
             genomdat=copyNumber[condition, x, drop=FALSE],
             chrom=factor(chromosome[condition], levels=unique(chromosome),
                          ordered=TRUE),
             maploc=start[condition],
             data.type="logratio",
             sampleid=x,
-            presorted=TRUE))
+            presorted=TRUE)
+        cna_smooth <- DNAcopy::smooth.CNA(cna_no_smooth)
+        return(cna_smooth)
+    }
+        )
 
     rm(list=c("chromosome", "start")); gc(FALSE)
 
