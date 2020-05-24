@@ -729,6 +729,7 @@ runSegmentation=function(x,
             data.type="logratio",
             sampleid=x,
             presorted=TRUE)
+        # Smooth the CNA object created, which is recommended by DNAcopy author.s
         cna_smooth <- DNAcopy::smooth.CNA(cna_no_smooth)
         return(cna_smooth)
     }
