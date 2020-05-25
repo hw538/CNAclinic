@@ -38,7 +38,7 @@
 #' undo.splits="sdundo". Default is 1.0.
 #' @param segmentStatistic Default is "seg.mean".
 #' @param cbsTransformFun The trasformation method of copyNumbers in CBS segmentation
-#' Default is "log2", could also be "sqrt" or "none".
+#' Default is "log2", could also be "sqrt".
 #' @details If \code{x} is a data.frame it should contain the columns:
 #' \code{chromosome}, \code{start}, \code{end} and the optional column
 #' \code{usebin} followed by separate columns named after each different sample
@@ -98,7 +98,7 @@ runSegmentation=function(x,
         choices = c("mean", "median", "min", "max", "Q1", "Q3"),
         several.ok = FALSE)
     cbsTransformFun <- match.arg(cbsTransformFun,
-        choices = c("log2", "sqrt", "none"),
+        choices = c("log2", "sqrt"),
         several.ok = FALSE)
 
     if(is.null(genome))
@@ -724,15 +724,13 @@ runSegmentation=function(x,
 
     # To Stabilize variance for CBS
     if (cbsTransformFun == "log2") {
-        copyNumber <- .toLog2(copyNumber, inv = FALSE)
+        # The CNAclinic object input is already log2Ratio, no need to .toLog2 again.
         copyNumber <- as.matrix(copyNumber)
-    } else if (cbsTransformFun == "sqrt") {
-       copyNumber <- .stabilisedTrans(copyNumber, inv = FALSE) 
-       copyNumber <- as.matrix(copyNumber)
     } else {
-        # Do nothing.
+        copyNumber <- .toLog2(copyNumber, inv = TRUE)
+        copyNumber <- .stabilisedTrans(copyNumber, inv = FALSE) 
         copyNumber <- as.matrix(copyNumber)
-    }
+    } 
     #copyNumber <- .toLog2(copyNumber, inv=TRUE)
     #copyNumber <- .stabilisedTrans(copyNumber, inv=FALSE)
     
@@ -751,11 +749,18 @@ runSegmentation=function(x,
             sampleid=x,
             presorted=TRUE)
         # Smooth the CNA object created, which is recommended by DNAcopy author.
-        # cna_smooth <- DNAcopy::smooth.CNA(cna_no_smooth, smooth.region=30, outlier.SD.scale=4, smooth.SD.scale=2)
-        # Message("Done smoothing CNA object")
-        return(cna_no_smooth)
-    }
-        )
+        cna_smooth <- DNAcopy::smooth.CNA(cna_no_smooth, smooth.region=30, outlier.SD.scale=4, smooth.SD.scale=2)
+
+      # Haichao: Some bins in our data will have infinite value, 
+      # such as copy number = 8*e306, thus its log2R = 1019.552,
+      # its sqrt value = 2.8*e153, if use sqrt as input, this bin will bug DNAcopy segmentation.
+      # (why? still under investigation)
+       if (cbsTransformFun == "log2"){
+           return(cna_no_smooth)
+       } else {
+           return(cna_smooth)
+       }
+    })
 
     rm(list=c("chromosome", "start")); gc(FALSE)
 
@@ -787,15 +792,11 @@ runSegmentation=function(x,
     # Transform metric backward.
 
      if (cbsTransformFun == "log2") {
-        segDF <- .toLog2(segDF, inv = TRUE)
-    } else if (cbsTransformFun == "sqrt") {
-       segDF <- .stabilisedTrans(segDF, inv = TRUE) 
+        # Do nothing. Because the input is already log2.
     } else {
-        # Do nothing.
-    }
+       segDF <- .toLog2(.stabilisedTrans(segDF, inv=TRUE), inv=FALSE)
+    } 
     
-    
-    #segDF <- .toLog2(.stabilisedTrans(segDF, inv=TRUE), inv=FALSE)
 
     rm(list=c("cna")); gc(FALSE)
 
