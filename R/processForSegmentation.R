@@ -381,7 +381,7 @@ processForSegmentation = function(
     }
 
     message("Pre-processing steps are completed.")
-    saveRDS(copyNUmbers, file = "tmp_QDNAseq_smoothed_ref_normalized")
+    saveRDS(copyNumbers, file = "tmp_QDNAseq_smoothed_ref_normalized")
     if(outputType == "CNAclinicData"){
 
         bins <- data.frame(
