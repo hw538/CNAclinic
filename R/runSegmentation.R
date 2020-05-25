@@ -712,9 +712,9 @@ runSegmentation=function(x,
     copyNumber[!condition, ] <- NA_real_
 
     # To Stabilize variance for CBS
-    copyNumber <- .toLog2(copyNumber, inv=TRUE)
-    copyNumber <- .stabilisedTrans(copyNumber, inv=FALSE)
-    copyNumber <- as.matrix(copyNumber)
+    #copyNumber <- .toLog2(copyNumber, inv=TRUE)
+    #copyNumber <- .stabilisedTrans(copyNumber, inv=FALSE)
+    #copyNumber <- as.matrix(copyNumber)
 
     chromosome <- x$chromosome
     start <- x$start
@@ -747,7 +747,7 @@ runSegmentation=function(x,
     segments <- .flapply(cna, FUN=function(x, ...) {
         message(msgs[colnames(x)[3]])
         DNAcopy::segment(x, alpha=alpha, undo.splits=undo.splits,
-                         undo.SD=undo.SD, verbose=3, ...)
+                         undo.SD=undo.SD, verbose=1, ...)
     })
 
     segmentStatisticCol <- grep(segmentStatistic,
