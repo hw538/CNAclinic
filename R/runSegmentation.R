@@ -749,14 +749,14 @@ runSegmentation=function(x,
             sampleid=x,
             presorted=TRUE)
         # Smooth the CNA object created, which is recommended by DNAcopy author.
-        cna_smooth <- DNAcopy::smooth.CNA(cna_no_smooth, smooth.region=30, outlier.SD.scale=4, smooth.SD.scale=2)
+        cna_smooth <- DNAcopy::smooth.CNA(cna_no_smooth, smooth.region=10, outlier.SD.scale=4, smooth.SD.scale=2)
 
       # Haichao: Some bins in our data will have infinite value, 
       # such as copy number = 8*e306, thus its log2R = 1019.552,
       # its sqrt value = 2.8*e153, if use sqrt as input, this bin will bug DNAcopy segmentation.
       # (why? still under investigation)
        if (cbsTransformFun == "log2"){
-           return(cna_no_smooth)
+           return(cna_smooth)
        } else {
            return(cna_smooth)
        }
