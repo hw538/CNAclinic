@@ -730,9 +730,9 @@ runSegmentation=function(x,
             sampleid=x,
             presorted=TRUE)
         # Smooth the CNA object created, which is recommended by DNAcopy author.
-        cna_smooth <- DNAcopy::smooth.CNA(cna_no_smooth, smooth.region=30, outlier.SD.scale=4, smooth.SD.scale=2)
-        message("Done smoothing CNA object")
-        return(cna_smooth)
+        # cna_smooth <- DNAcopy::smooth.CNA(cna_no_smooth, smooth.region=30, outlier.SD.scale=4, smooth.SD.scale=2)
+        # Message("Done smoothing CNA object")
+        return(cna_no_smooth)
     }
         )
 
