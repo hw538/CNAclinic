@@ -37,7 +37,8 @@
 #' @param undo.SD The number of SDs between means to keep a split if
 #' undo.splits="sdundo". Default is 1.0.
 #' @param segmentStatistic Default is "seg.mean".
-#'
+#' @param cbsTransformFun The trasformation method of copyNumbers in CBS segmentation
+#' Default is "log2", could also be "sqrt" or "none".
 #' @details If \code{x} is a data.frame it should contain the columns:
 #' \code{chromosome}, \code{start}, \code{end} and the optional column
 #' \code{usebin} followed by separate columns named after each different sample
