@@ -70,7 +70,8 @@ runSegmentation=function(x,
     gapLength=1000000,
     normalizeSegmentedBins=TRUE, inter=c(-0.1, 0.1),
     alpha=0.01, undo.splits="sdundo", undo.SD=1.0,
-    segmentStatistic="seg.mean"){
+    segmentStatistic="seg.mean",
+    cbsTransformFun = "log2"){
 
 
 #############################################################################
@@ -87,14 +88,17 @@ runSegmentation=function(x,
         stop("x is missing")
 
     segmentType <- match.arg(segmentType,
-        choices=c("CBS", "LACBS", "HMM", "PLS"),
-        several.ok=TRUE)
+        choices = c("CBS", "LACBS", "HMM", "PLS"),
+        several.ok = TRUE)
     segmentsToSummarise <- match.arg(segmentsToSummarise,
-        choices=c("CBS", "LACBS", "HMM", "PLS"),
-        several.ok=TRUE)
+        choices = c("CBS", "LACBS", "HMM", "PLS"),
+        several.ok = TRUE)
     summaryMethod <- match.arg(summaryMethod,
-        choices=c("mean", "median", "min", "max", "Q1", "Q3"),
-        several.ok=FALSE)
+        choices = c("mean", "median", "min", "max", "Q1", "Q3"),
+        several.ok = FALSE)
+    cbsTransformFun <- match.arg(cbsTransformFun,
+        choices = c("log2", "sqrt", "none"),
+        several.ok = FALSE)
 
     if(is.null(genome))
         stop("Please provide genome build used to map sequencing data.")
@@ -317,7 +321,8 @@ runSegmentation=function(x,
                 undo.SD=undo.SD,
                 segmentStatistic=segmentStatistic,
                 normalizeSegmentedBins=normalizeSegmentedBins,
-                inter=inter)
+                inter=inter,
+                cbsTransformFun = cbsTransformFun)
 
         }, error=function(e) {
             message(paste(
@@ -699,9 +704,14 @@ runSegmentation=function(x,
 
 #############################################################################
 
-.getCBSSegments <- function(x, alpha=1e-10, undo.splits="sdundo", undo.SD=1.0,
-    segmentStatistic="seg.mean", normalizeSegmentedBins=FALSE,
-    inter=c(-0.1, 0.1)){
+.getCBSSegments <- function(x, 
+                            alpha = 1e-10, 
+                            undo.splits = "sdundo", 
+                            undo.SD = 1.0,
+                            segmentStatistic = "seg.mean", 
+                            normalizeSegmentedBins = FALSE,
+                            inter = c(-0.1, 0.1),
+                            cbsTransformFun = "log2" ){
 
     condition <- x$usebin
 
@@ -712,9 +722,19 @@ runSegmentation=function(x,
     copyNumber[!condition, ] <- NA_real_
 
     # To Stabilize variance for CBS
+    if (cbsTransformFun == "log2") {
+        copyNumber <- .toLog2(copyNumber, inv = FALSE)
+        copyNumber <- as.matrix(copyNumber)
+    } else if (cbsTransformFun == "sqrt") {
+       copyNumber <- .stabilisedTrans(copyNumber, inv = FALSE) 
+       copyNumber <- as.matrix(copyNumber)
+    } else {
+        # Do nothing.
+        copyNumber <- as.matrix(copyNumber)
+    }
     #copyNumber <- .toLog2(copyNumber, inv=TRUE)
     #copyNumber <- .stabilisedTrans(copyNumber, inv=FALSE)
-    #copyNumber <- as.matrix(copyNumber)
+    
 
     chromosome <- x$chromosome
     start <- x$start
@@ -762,7 +782,19 @@ runSegmentation=function(x,
     colnames(segDF) <- sampleNames
     row.names(segDF) <- NULL
     segDF[is.na(copyNumber)] <- NA_real_
-    segDF <- .toLog2(.stabilisedTrans(segDF, inv=TRUE), inv=FALSE)
+
+    # Transform metric backward.
+
+     if (cbsTransformFun == "log2") {
+        segDF <- .toLog2(segDF, inv = TRUE)
+    } else if (cbsTransformFun == "sqrt") {
+       segDF <- .stabilisedTrans(segDF, inv = TRUE) 
+    } else {
+        # Do nothing.
+    }
+    
+    
+    #segDF <- .toLog2(.stabilisedTrans(segDF, inv=TRUE), inv=FALSE)
 
     rm(list=c("cna")); gc(FALSE)
 
