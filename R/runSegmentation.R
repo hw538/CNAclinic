@@ -38,7 +38,7 @@
 #' undo.splits="sdundo". Default is 1.0.
 #' @param segmentStatistic Default is "seg.mean".
 #' @param cbsTransformFun The trasformation method of copyNumbers in CBS segmentation
-#' Default is "log2", could also be "sqrt".
+#' Default is "sqrt", could also be "log2".
 #' @details If \code{x} is a data.frame it should contain the columns:
 #' \code{chromosome}, \code{start}, \code{end} and the optional column
 #' \code{usebin} followed by separate columns named after each different sample
@@ -72,7 +72,7 @@ runSegmentation=function(x,
     normalizeSegmentedBins=TRUE, inter=c(-0.1, 0.1),
     alpha=0.01, undo.splits="sdundo", undo.SD=1.0,
     segmentStatistic="seg.mean",
-    cbsTransformFun = "log2"){
+    cbsTransformFun = "sqrt"){
 
 
 #############################################################################
