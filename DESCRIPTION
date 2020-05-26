@@ -1,7 +1,7 @@
 Package: CNAclinic
 Type: Package
 Title: A Software Suite for Shallow Sequencing Copy Number Analysis
-Version: 1.1.2
+Version: 1.1.3
 Date: 2017-11-01
 Author: Dineika Chandrananda
 Maintainer: <dineika.chandrananda@cruk.cam.ac.uk>
