@@ -19,7 +19,7 @@ install.packages("devtools")
 
 library(devtools)
 
-install_github("sdchandra/CNAclinic", build_vignettes = TRUE, dependencies=TRUE)
+install_github("hw538/CNAclinic", build_vignettes = TRUE, dependencies=TRUE)
 
 library(CNAclinic)
 ```
